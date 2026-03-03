@@ -329,7 +329,9 @@ export default function DailyFeed({
   onStatusChange,
   onAddTask,
 }: DailyFeedProps) {
-  const dayTasks = tasks.filter((t: UITask) => t.date === selectedDate);
+  const dayTasks = tasks
+    .filter((t: UITask) => t.date === selectedDate)
+    .sort((a, b) => (a.status === "완료" ? 1 : 0) - (b.status === "완료" ? 1 : 0));
   const getMember = (memberId: string) => group.members.find((m) => m.id === memberId);
   const getMemberColor = (userId: string) =>
     group.members.find((m) => m.id === userId)?.color ?? "#94a3b8";
