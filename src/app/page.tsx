@@ -208,14 +208,16 @@ export default function DashboardPage() {
         />
       )}
 
-      <DailyFeed
-        group={calendarGroup}
-        tasks={calendarTasks}
-        selectedDate={selectedDate}
-        currentUserId={user.uid}
-        onStatusChange={handleStatusChange}
-        onAddTask={() => setShowAddTask(true)}
-      />
+      {!todoTargetMemberId && (
+        <DailyFeed
+          group={calendarGroup}
+          tasks={calendarTasks}
+          selectedDate={selectedDate}
+          currentUserId={user.uid}
+          onStatusChange={handleStatusChange}
+          onAddTask={() => setShowAddTask(true)}
+        />
+      )}
 
       {showGroupModal && (
         <GroupModal
