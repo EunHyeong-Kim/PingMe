@@ -11,7 +11,6 @@ import GroupModal from "@/components/GroupModal";
 import AddTaskModal from "@/components/AddTaskModal";
 import {
   getMyGroups,
-  getGroupMembers,
   subscribeGroupTasks,
   subscribeGroupMembers,
   updateTaskStatus,
@@ -52,12 +51,19 @@ export default function DashboardPage() {
     });
   }, [user]);
 
-  // 선택된 그룹 멤버 실시간 구독
+  // 모든 그룹 멤버 실시간 구독 (그룹 목록 변경 시 재구독)
   useEffect(() => {
-    if (!selectedGroupId) return;
-    const unsub = subscribeGroupMembers(selectedGroupId, setMembers);
-    return unsub;
-  }, [selectedGroupId]);
+    if (groups.length === 0) return;
+    const unsubs = groups.map((g) =>
+      subscribeGroupMembers(g.id, (gMembers) => {
+        setMembers((prev) => [
+          ...prev.filter((m) => m.groupId !== g.id),
+          ...gMembers,
+        ]);
+      })
+    );
+    return () => unsubs.forEach((u) => u());
+  }, [groups]);
 
   // 선택된 그룹 태스크 실시간 구독
   useEffect(() => {
