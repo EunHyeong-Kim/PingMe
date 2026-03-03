@@ -19,6 +19,7 @@ interface SidebarGroup {
   profileImg?: string;
   profileEmoji?: string;
   ownerId: string;
+  inviteCode?: string;
   members: SidebarMember[];
 }
 
@@ -133,6 +134,7 @@ export default function Sidebar({
         <MemberSettingsModal
           groupId={settingsGroupId}
           groupName={settingsGroup.name}
+          inviteCode={settingsGroup.inviteCode}
           userId={currentUserId}
           currentColor={currentMember.color}
           currentEmoji={currentMember.profileEmoji}

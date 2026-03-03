@@ -44,11 +44,14 @@ export interface Comment {
   createdAt: number;
 }
 
+export type ReactionType = "좋아요" | "슬퍼요" | "응원해요" | "웃겨요" | "화나요";
+
 export interface TodoItem {
   id: string;
   text: string;
   completed: boolean;
   createdAt: number;
+  reactions?: Partial<Record<ReactionType, string[]>>; // reactionType -> userId[]
 }
 
 export interface TodoCategory {

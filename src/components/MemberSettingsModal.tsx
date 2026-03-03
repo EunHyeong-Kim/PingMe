@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { X, Pipette, Loader2, Check, Trash2, Pencil } from "lucide-react";
+import { X, Pipette, Loader2, Check, Trash2, Pencil, Copy } from "lucide-react";
 import { updateMemberColor, updateMemberEmoji, renameGroup, deleteGroup } from "@/lib/firestore";
 import EmojiPickerPanel from "./EmojiPickerPanel";
 
@@ -14,6 +14,7 @@ const PRESET_COLORS = [
 interface MemberSettingsModalProps {
   groupId: string;
   groupName: string;
+  inviteCode?: string;
   userId: string;
   currentColor: string;
   currentEmoji?: string;
@@ -28,6 +29,7 @@ interface MemberSettingsModalProps {
 export default function MemberSettingsModal({
   groupId,
   groupName,
+  inviteCode,
   userId,
   currentColor,
   currentEmoji,
@@ -49,6 +51,16 @@ export default function MemberSettingsModal({
   const [groupNameInput, setGroupNameInput] = useState(groupName);
   const [nameSaving, setNameSaving] = useState(false);
   const [nameSaved, setNameSaved] = useState(false);
+
+  // 초대코드 복사
+  const [codeCopied, setCodeCopied] = useState(false);
+  const handleCopyCode = () => {
+    if (!inviteCode) return;
+    navigator.clipboard.writeText(inviteCode).then(() => {
+      setCodeCopied(true);
+      setTimeout(() => setCodeCopied(false), 1800);
+    });
+  };
 
   // 그룹 삭제
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -110,44 +122,68 @@ export default function MemberSettingsModal({
           <div className="mb-6 pb-6 border-b border-slate-100">
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">그룹 설정</p>
 
-            {/* 그룹명 변경 */}
-            <div className="mb-3">
-              {editingName ? (
-                <div className="flex gap-2">
-                  <input
-                    autoFocus
-                    type="text"
-                    value={groupNameInput}
-                    onChange={(e) => setGroupNameInput(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter") handleNameSave(); if (e.key === "Escape") setEditingName(false); }}
-                    maxLength={20}
-                    className="flex-1 px-3 py-2 rounded-xl border border-sky-300 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-200 transition-all"
-                  />
+            {/* 그룹명 + 초대코드 2열 */}
+            <div className="flex gap-2 mb-3">
+              {/* 그룹명 (절반) */}
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">그룹명</p>
+                {editingName ? (
+                  <div className="flex gap-1">
+                    <input
+                      autoFocus
+                      type="text"
+                      value={groupNameInput}
+                      onChange={(e) => setGroupNameInput(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") handleNameSave(); if (e.key === "Escape") setEditingName(false); }}
+                      maxLength={20}
+                      className="flex-1 min-w-0 px-2 py-1.5 rounded-lg border border-sky-300 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-200 transition-all"
+                    />
+                    <button
+                      onClick={handleNameSave}
+                      disabled={nameSaving || !groupNameInput.trim()}
+                      className="px-2 py-1.5 rounded-lg bg-sky-500 text-white hover:bg-sky-600 disabled:opacity-50 transition-all flex items-center"
+                    >
+                      {nameSaving ? <Loader2 size={11} className="animate-spin" /> : <Check size={11} />}
+                    </button>
+                    <button
+                      onClick={() => { setEditingName(false); setGroupNameInput(groupName); }}
+                      className="px-2 py-1.5 rounded-lg bg-slate-100 text-slate-500 hover:bg-slate-200 transition-all"
+                    >
+                      <X size={11} />
+                    </button>
+                  </div>
+                ) : (
                   <button
-                    onClick={handleNameSave}
-                    disabled={nameSaving || !groupNameInput.trim()}
-                    className="px-3 py-2 rounded-xl bg-sky-500 text-white text-xs font-bold hover:bg-sky-600 disabled:opacity-50 transition-all flex items-center gap-1"
+                    onClick={() => setEditingName(true)}
+                    className="w-full flex items-center justify-between gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 hover:border-sky-300 hover:bg-sky-50 transition-all group"
                   >
-                    {nameSaving ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
+                    <span className="text-xs text-slate-700 font-semibold truncate">
+                      {nameSaved ? "✓ 저장됨" : groupName}
+                    </span>
+                    <Pencil size={11} className="text-slate-300 group-hover:text-sky-400 transition-colors shrink-0" />
                   </button>
-                  <button
-                    onClick={() => { setEditingName(false); setGroupNameInput(groupName); }}
-                    className="px-3 py-2 rounded-xl bg-slate-100 text-slate-500 text-xs hover:bg-slate-200 transition-all"
-                  >
-                    <X size={12} />
-                  </button>
-                </div>
-              ) : (
+                )}
+              </div>
+
+              {/* 초대코드 (절반) */}
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">초대코드</p>
                 <button
-                  onClick={() => setEditingName(true)}
-                  className="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-slate-200 hover:border-sky-300 hover:bg-sky-50 transition-all group"
+                  onClick={handleCopyCode}
+                  disabled={!inviteCode}
+                  className="w-full flex items-center justify-between gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 hover:border-sky-300 hover:bg-sky-50 transition-all group"
+                  title="클릭하여 복사"
                 >
-                  <span className="text-sm text-slate-700 font-semibold truncate">
-                    {nameSaved ? "✓ 저장됨" : groupName}
+                  <span className="text-xs font-bold text-slate-600 truncate tracking-wider">
+                    {inviteCode ?? "—"}
                   </span>
-                  <Pencil size={12} className="text-slate-300 group-hover:text-sky-400 transition-colors shrink-0" />
+                  {codeCopied ? (
+                    <Check size={11} className="text-emerald-400 shrink-0" />
+                  ) : (
+                    <Copy size={11} className="text-slate-300 group-hover:text-sky-400 transition-colors shrink-0" />
+                  )}
                 </button>
-              )}
+              </div>
             </div>
 
             {/* 그룹 삭제 */}

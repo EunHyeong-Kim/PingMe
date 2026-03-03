@@ -156,6 +156,7 @@ export default function DashboardPage() {
     name: g.name,
     profileEmoji: g.profileEmoji,
     ownerId: g.ownerId,
+    inviteCode: g.inviteCode,
     members: members
       .filter((m) => m.groupId === g.id)
       .map((m) => ({ id: m.userId, name: m.displayName, color: m.chosenColor, profileEmoji: m.profileEmoji })),
@@ -210,6 +211,9 @@ export default function DashboardPage() {
             targetUserEmoji={target.profileEmoji}
             groupId={selectedGroup.id}
             isOwner={target.id === user.uid}
+            currentUserId={user.uid}
+            members={calendarGroup.members}
+            onMemberClick={(memberId) => setTodoTargetMemberId(memberId)}
             onBack={() => setTodoTargetMemberId(null)}
           />
         );
