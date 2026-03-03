@@ -177,14 +177,15 @@ function TaskCard({ task, memberColor, memberName, memberEmoji, isOwner, current
               </>
             )}
 
-            {/* 상태 버튼 */}
-            <button
-              onClick={() => onStatusChange(task.id, STATUS_CYCLE[task.status])}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border transition-all duration-150 ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}
+            {/* 상태 버튼 — 본인 일정만 변경 가능 */}
+            <div
+              onClick={isOwner ? () => onStatusChange(task.id, STATUS_CYCLE[task.status]) : undefined}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border transition-all duration-150 ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border} ${isOwner ? "cursor-pointer hover:opacity-80" : "cursor-default opacity-70"}`}
+              title={isOwner ? "클릭하여 상태 변경" : "본인 일정만 변경할 수 있어요"}
             >
               {statusStyle.icon}
               {task.status}
-            </button>
+            </div>
           </div>
         </div>
 
