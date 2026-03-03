@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { LogOut, Plus, Settings } from "lucide-react";
+import { LogOut, Plus, Settings, UserCog } from "lucide-react";
 import MemberSettingsModal from "./MemberSettingsModal";
+import AccountSettingsModal from "./AccountSettingsModal";
 
 interface SidebarMember {
   id: string;
@@ -31,6 +32,7 @@ interface SidebarProps {
 
 export default function Sidebar({ groups, selectedGroupId, onSelectGroup, onAddGroup, onLogOut, currentUserId }: SidebarProps) {
   const [settingsGroupId, setSettingsGroupId] = useState<string | null>(null);
+  const [showAccountSettings, setShowAccountSettings] = useState(false);
 
   const settingsGroup = settingsGroupId ? groups.find((g) => g.id === settingsGroupId) : null;
   const currentMember = settingsGroup?.members.find((m) => m.id === currentUserId);
@@ -94,13 +96,24 @@ export default function Sidebar({ groups, selectedGroupId, onSelectGroup, onAddG
           </div>
           <span>그룹 추가 / 참여</span>
         </button>
-        <button
-          onClick={onLogOut}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all text-sm"
-        >
-          <LogOut size={14} />
-          <span>로그아웃</span>
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowAccountSettings(true)}
+            className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl text-slate-400 hover:bg-sky-50 hover:text-sky-500 transition-all text-sm"
+            title="내 정보 변경"
+          >
+            <UserCog size={14} />
+            <span>내 정보</span>
+          </button>
+          <button
+            onClick={onLogOut}
+            className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all text-sm"
+            title="로그아웃"
+          >
+            <LogOut size={14} />
+            <span>로그아웃</span>
+          </button>
+        </div>
       </div>
 
       {/* 멤버 설정 모달 */}
@@ -114,6 +127,11 @@ export default function Sidebar({ groups, selectedGroupId, onSelectGroup, onAddG
           onClose={() => setSettingsGroupId(null)}
           onSaved={() => setSettingsGroupId(null)}
         />
+      )}
+
+      {/* 내 정보 변경 모달 */}
+      {showAccountSettings && (
+        <AccountSettingsModal onClose={() => setShowAccountSettings(false)} />
       )}
     </aside>
   );

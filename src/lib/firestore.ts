@@ -124,6 +124,12 @@ export async function updateMemberEmoji(groupId: string, userId: string, profile
   await updateDoc(doc(db, "memberConfigs", id), { profileEmoji });
 }
 
+export async function updateAllMemberDisplayNames(userId: string, displayName: string): Promise<void> {
+  const q = query(collection(db, "memberConfigs"), where("userId", "==", userId));
+  const snap = await getDocs(q);
+  await Promise.all(snap.docs.map((d) => updateDoc(d.ref, { displayName })));
+}
+
 export async function getGroupMembers(groupId: string): Promise<MemberConfig[]> {
   const q = query(collection(db, "memberConfigs"), where("groupId", "==", groupId));
   const snap = await getDocs(q);
