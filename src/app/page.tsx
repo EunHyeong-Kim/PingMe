@@ -186,7 +186,7 @@ export default function DashboardPage() {
       <Sidebar
         groups={sidebarGroups}
         selectedGroupId={selectedGroup.id}
-        onSelectGroup={setSelectedGroupId}
+        onSelectGroup={(id) => { setSelectedGroupId(id); setTodoTargetMemberId(null); }}
         onAddGroup={() => setShowGroupModal(true)}
         onDeleteGroup={handleDeleteGroup}
         currentUserId={user.uid}
