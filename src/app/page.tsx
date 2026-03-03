@@ -181,6 +181,7 @@ export default function DashboardPage() {
     memberId: t.authorId,
     text: t.text,
     date: t.date,
+    endDate: t.endDate,
     status: t.status,
     comments: [],
   }));

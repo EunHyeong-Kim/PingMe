@@ -102,6 +102,7 @@ function TaskCard({ task, memberColor, memberName, memberEmoji, isOwner, current
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(task.text);
   const [editDate, setEditDate] = useState(task.date);
+  const [editEndDate, setEditEndDate] = useState(task.endDate ?? "");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -126,7 +127,7 @@ function TaskCard({ task, memberColor, memberName, memberEmoji, isOwner, current
   const handleEditSave = async () => {
     if (!editText.trim()) return;
     setSaving(true);
-    await editTask(task.id, editText.trim(), editDate);
+    await editTask(task.id, editText.trim(), editDate, editEndDate || undefined);
     setSaving(false);
     setIsEditing(false);
   };
@@ -134,6 +135,7 @@ function TaskCard({ task, memberColor, memberName, memberEmoji, isOwner, current
   const handleEditCancel = () => {
     setEditText(task.text);
     setEditDate(task.date);
+    setEditEndDate(task.endDate ?? "");
     setIsEditing(false);
   };
 
@@ -207,15 +209,35 @@ function TaskCard({ task, memberColor, memberName, memberEmoji, isOwner, current
           </div>
         )}
 
+        {/* 기간 배지 */}
+        {task.endDate && !isEditing && (
+          <div className="mb-2 flex items-center gap-1">
+            <span className="text-[10px] font-semibold text-sky-500 bg-sky-50 border border-sky-200 rounded-full px-2 py-0.5">
+              {task.date.replace(/-/g, "/")} ~ {task.endDate.replace(/-/g, "/")}
+            </span>
+          </div>
+        )}
+
         {/* 인라인 수정 폼 */}
         {isEditing ? (
           <div className="mb-3 space-y-2">
-            <input
-              type="date"
-              value={editDate}
-              onChange={(e) => setEditDate(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-sky-200 text-xs text-slate-600 focus:outline-none focus:border-sky-400 bg-sky-50"
-            />
+            <div className="flex gap-2 items-center">
+              <input
+                type="date"
+                value={editDate}
+                onChange={(e) => setEditDate(e.target.value)}
+                className="flex-1 px-3 py-2 rounded-xl border border-sky-200 text-xs text-slate-600 focus:outline-none focus:border-sky-400 bg-sky-50"
+              />
+              <span className="text-xs text-slate-400 shrink-0">~</span>
+              <input
+                type="date"
+                value={editEndDate}
+                min={editDate}
+                onChange={(e) => setEditEndDate(e.target.value)}
+                className="flex-1 px-3 py-2 rounded-xl border border-sky-200 text-xs text-slate-600 focus:outline-none focus:border-sky-400 bg-sky-50"
+                placeholder="종료일 (선택)"
+              />
+            </div>
             <textarea
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
@@ -330,7 +352,7 @@ export default function DailyFeed({
   onAddTask,
 }: DailyFeedProps) {
   const dayTasks = tasks
-    .filter((t: UITask) => t.date === selectedDate)
+    .filter((t: UITask) => t.date <= selectedDate && (t.endDate ?? t.date) >= selectedDate)
     .sort((a, b) => (a.status === "완료" ? 1 : 0) - (b.status === "완료" ? 1 : 0));
   const getMember = (memberId: string) => group.members.find((m) => m.id === memberId);
   const getMemberColor = (userId: string) =>
@@ -424,7 +446,7 @@ export default function DailyFeed({
           className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-600 hover:to-sky-500 text-white text-sm font-bold transition-all duration-150 shadow-lg shadow-sky-200 hover:shadow-sky-300 hover:-translate-y-0.5"
         >
           <Plus size={16} />
-          오늘 할 일 추가
+          일정 추가
         </button>
       </div>
     </aside>

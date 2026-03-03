@@ -29,7 +29,8 @@ export interface Task {
   groupId: string;
   authorId: string;
   text: string;
-  date: string; // "YYYY-MM-DD"
+  date: string;      // 시작일 "YYYY-MM-DD"
+  endDate?: string;  // 종료일 (없으면 단일 날짜)
   status: TaskStatus;
   createdAt: number;
 }

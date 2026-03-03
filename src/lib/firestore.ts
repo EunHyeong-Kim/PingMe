@@ -187,7 +187,8 @@ export async function addTask(
   groupId: string,
   authorId: string,
   text: string,
-  date: string
+  date: string,
+  endDate?: string
 ): Promise<Task> {
   const ref = doc(collection(db, "tasks"));
   const task: Task = {
@@ -196,6 +197,7 @@ export async function addTask(
     authorId,
     text,
     date,
+    ...(endDate && endDate > date ? { endDate } : {}),
     status: "예정",
     createdAt: Date.now(),
   };
@@ -207,8 +209,12 @@ export async function updateTaskStatus(taskId: string, status: TaskStatus): Prom
   await updateDoc(doc(db, "tasks", taskId), { status });
 }
 
-export async function editTask(taskId: string, text: string, date: string): Promise<void> {
-  await updateDoc(doc(db, "tasks", taskId), { text, date });
+export async function editTask(taskId: string, text: string, date: string, endDate?: string): Promise<void> {
+  await updateDoc(doc(db, "tasks", taskId), {
+    text,
+    date,
+    ...(endDate && endDate > date ? { endDate } : { endDate: null }),
+  });
 }
 
 export async function deleteTask(taskId: string): Promise<void> {

@@ -62,13 +62,27 @@ export default function MonthlyCalendar({
   }, [year, month]);
 
   const tasksByDate = useMemo(() => {
-    const map: Record<string, UITask[]> = {};
+    const map: Record<string, { task: UITask; isContinuation: boolean }[]> = {};
+
     tasks.forEach((task) => {
-      if (!map[task.date]) map[task.date] = [];
-      map[task.date].push(task);
+      const start = task.date;
+      const end = task.endDate ?? task.date;
+
+      // 시작일~종료일 사이 모든 날짜에 등록
+      const cur = new Date(start + "T00:00:00");
+      const endD = new Date(end + "T00:00:00");
+      let first = true;
+      while (cur <= endD) {
+        const key = `${cur.getFullYear()}-${String(cur.getMonth() + 1).padStart(2, "0")}-${String(cur.getDate()).padStart(2, "0")}`;
+        if (!map[key]) map[key] = [];
+        map[key].push({ task, isContinuation: !first });
+        first = false;
+        cur.setDate(cur.getDate() + 1);
+      }
     });
+
     Object.keys(map).forEach((date) => {
-      map[date].sort((a, b) => (a.status === "완료" ? 1 : 0) - (b.status === "완료" ? 1 : 0));
+      map[date].sort((a, b) => (a.task.status === "완료" ? 1 : 0) - (b.task.status === "완료" ? 1 : 0));
     });
     return map;
   }, [tasks]);
@@ -141,7 +155,7 @@ export default function MonthlyCalendar({
         {calendarDays.map(({ day, currentMonth, dateStr }, idx) => {
           const isToday = dateStr === today;
           const isSelected = dateStr === selectedDate;
-          const dayTasks = tasksByDate[dateStr] ?? [];
+          const dayEntries = tasksByDate[dateStr] ?? [];
           const isWeekend = idx % 7 === 0 || idx % 7 === 6;
           const isSunday = idx % 7 === 0;
           const holiday = currentMonth ? getHoliday(dateStr) : undefined;
@@ -191,24 +205,27 @@ export default function MonthlyCalendar({
               </div>
 
               {/* 할 일 목록 */}
-              {dayTasks.length > 0 && currentMonth && (
+              {dayEntries.length > 0 && currentMonth && (
                 <div className="mt-1 flex flex-col gap-0.5 w-full overflow-hidden">
-                  {dayTasks.slice(0, 3).map((task) => (
-                    <div
-                      key={task.id}
-                      className="rounded-md px-1.5 py-0.5 w-full"
-                      style={{ backgroundColor: getMemberColor(task.memberId) + "20" }}
-                    >
-                      <span
-                        className="block text-[11px] truncate leading-tight font-semibold"
-                        style={{ color: getMemberColor(task.memberId) }}
+                  {dayEntries.slice(0, 3).map(({ task }) => {
+                    const color = getMemberColor(task.memberId);
+                    return (
+                      <div
+                        key={task.id}
+                        className="rounded-md px-1.5 py-0.5 w-full"
+                        style={{ backgroundColor: color + "20" }}
                       >
-                        {task.status === "완료" ? "✓ " : ""}{task.text}
-                      </span>
-                    </div>
-                  ))}
-                  {dayTasks.length > 3 && (
-                    <span className="text-[10px] text-slate-400 font-medium pl-1">+{dayTasks.length - 3}개 더</span>
+                        <span
+                          className="block text-[11px] truncate leading-tight font-semibold"
+                          style={{ color }}
+                        >
+                          {task.status === "완료" ? "✓ " : ""}{task.text}
+                        </span>
+                      </div>
+                    );
+                  })}
+                  {dayEntries.length > 3 && (
+                    <span className="text-[10px] text-slate-400 font-medium pl-1">+{dayEntries.length - 3}개 더</span>
                   )}
                 </div>
               )}

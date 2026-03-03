@@ -26,6 +26,7 @@ export interface UITask {
   memberId: string;
   text: string;
   date: string;
+  endDate?: string;
   status: TaskStatus;
   comments: UIComment[];
 }
