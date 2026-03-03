@@ -105,6 +105,10 @@ export async function deleteGroup(groupId: string): Promise<void> {
   await deleteDoc(doc(db, "groups", groupId));
 }
 
+export async function renameGroup(groupId: string, newName: string): Promise<void> {
+  await updateDoc(doc(db, "groups", groupId), { name: newName });
+}
+
 export async function getMyGroups(userId: string): Promise<Group[]> {
   const q = query(collection(db, "memberConfigs"), where("userId", "==", userId));
   const snap = await getDocs(q);

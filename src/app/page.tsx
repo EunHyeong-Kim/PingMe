@@ -86,6 +86,10 @@ export default function DashboardPage() {
     setSelectedGroupId(updatedGroups[0]?.id ?? null);
   }, [user]);
 
+  const handleRenameGroup = useCallback((groupId: string, newName: string) => {
+    setGroups((prev) => prev.map((g) => g.id === groupId ? { ...g, name: newName } : g));
+  }, []);
+
   const handleGroupCreatedOrJoined = async (group: Group) => {
     if (!user) return;
     const updatedGroups = await getMyGroups(user.uid);
@@ -189,6 +193,7 @@ export default function DashboardPage() {
         onSelectGroup={(id) => { setSelectedGroupId(id); setTodoTargetMemberId(null); }}
         onAddGroup={() => setShowGroupModal(true)}
         onDeleteGroup={handleDeleteGroup}
+        onRenameGroup={handleRenameGroup}
         currentUserId={user.uid}
         onLogOut={logOut}
       />
