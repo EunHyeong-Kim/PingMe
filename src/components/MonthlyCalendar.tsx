@@ -65,6 +65,9 @@ export default function MonthlyCalendar({
       if (!map[task.date]) map[task.date] = [];
       map[task.date].push(task);
     });
+    Object.keys(map).forEach((date) => {
+      map[date].sort((a, b) => (a.status === "완료" ? 1 : 0) - (b.status === "완료" ? 1 : 0));
+    });
     return map;
   }, [tasks]);
 
