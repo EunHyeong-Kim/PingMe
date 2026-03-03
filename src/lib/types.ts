@@ -42,3 +42,22 @@ export interface Comment {
   content: string;
   createdAt: number;
 }
+
+export interface TodoItem {
+  id: string;
+  text: string;
+  completed: boolean;
+  createdAt: number;
+}
+
+export interface TodoCategory {
+  id: string;
+  name: string;
+  items: TodoItem[];
+}
+
+export interface PersonalTodoList {
+  userId: string;
+  groupId: string;
+  categories: TodoCategory[];
+}

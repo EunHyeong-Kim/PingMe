@@ -13,6 +13,7 @@ interface MonthlyCalendarProps {
   onSelectDate: (date: string) => void;
   onPrevMonth: () => void;
   onNextMonth: () => void;
+  onMemberClick?: (memberId: string) => void;
 }
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
@@ -29,6 +30,7 @@ export default function MonthlyCalendar({
   onSelectDate,
   onPrevMonth,
   onNextMonth,
+  onMemberClick,
 }: MonthlyCalendarProps) {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -86,13 +88,20 @@ export default function MonthlyCalendar({
         </div>
 
         <div className="flex items-center gap-3">
-          {/* 멤버 컬러 범례 */}
-          <div className="flex items-center gap-4 mr-2 bg-sky-50 rounded-xl px-4 py-2 border border-sky-100">
+          {/* 멤버 컬러 범례 — 클릭 시 개인 투두 열기 */}
+          <div className="flex items-center gap-2 mr-2 bg-sky-50 rounded-xl px-4 py-2 border border-sky-100">
             {group.members.map((m) => (
-              <div key={m.id} className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: m.color }} />
-                <span className="text-xs text-slate-500 font-medium">{m.name}</span>
-              </div>
+              <button
+                key={m.id}
+                onClick={() => onMemberClick?.(m.id)}
+                className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-white hover:shadow-sm transition-all group/member"
+                title={`${m.name}의 투두리스트`}
+              >
+                <div className="w-2.5 h-2.5 rounded-full shadow-sm shrink-0" style={{ backgroundColor: m.color }} />
+                <span className="text-xs text-slate-500 font-medium group-hover/member:text-slate-700 transition-colors">
+                  {m.name}
+                </span>
+              </button>
             ))}
           </div>
 

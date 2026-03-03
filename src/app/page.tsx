@@ -9,6 +9,7 @@ import MonthlyCalendar from "@/components/MonthlyCalendar";
 import DailyFeed from "@/components/DailyFeed";
 import GroupModal from "@/components/GroupModal";
 import AddTaskModal from "@/components/AddTaskModal";
+import PersonalTodoModal from "@/components/PersonalTodoModal";
 import {
   getMyGroups,
   subscribeGroupTasks,
@@ -35,6 +36,7 @@ export default function DashboardPage() {
   const [pageLoading, setPageLoading] = useState(true);
   const [showGroupModal, setShowGroupModal] = useState(false);
   const [showAddTask, setShowAddTask] = useState(false);
+  const [todoTargetMemberId, setTodoTargetMemberId] = useState<string | null>(null);
 
   // 로그인 상태 확인
   useEffect(() => {
@@ -187,6 +189,7 @@ export default function DashboardPage() {
         onSelectDate={setSelectedDate}
         onPrevMonth={() => setCurrentDate((p) => new Date(p.getFullYear(), p.getMonth() - 1, 1))}
         onNextMonth={() => setCurrentDate((p) => new Date(p.getFullYear(), p.getMonth() + 1, 1))}
+        onMemberClick={(memberId) => setTodoTargetMemberId(memberId)}
       />
 
       <DailyFeed
@@ -215,6 +218,22 @@ export default function DashboardPage() {
           onClose={() => setShowAddTask(false)}
         />
       )}
+
+      {todoTargetMemberId && (() => {
+        const target = calendarGroup.members.find((m) => m.id === todoTargetMemberId);
+        if (!target) return null;
+        return (
+          <PersonalTodoModal
+            targetUserId={target.id}
+            targetUserName={target.name}
+            targetUserColor={target.color}
+            targetUserEmoji={target.profileEmoji}
+            groupId={selectedGroup.id}
+            isOwner={target.id === user.uid}
+            onClose={() => setTodoTargetMemberId(null)}
+          />
+        );
+      })()}
     </div>
   );
 }

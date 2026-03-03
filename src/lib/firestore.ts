@@ -13,7 +13,7 @@ import {
   Unsubscribe,
 } from "firebase/firestore";
 import { db } from "./firebase";
-import { Group, MemberConfig, Task, TaskStatus, Comment } from "./types";
+import { Group, MemberConfig, Task, TaskStatus, Comment, PersonalTodoList } from "./types";
 
 // 6자리 랜덤 초대 코드 생성
 function generateInviteCode(): string {
@@ -227,6 +227,26 @@ export async function addComment(
     content,
     createdAt: Date.now(),
   });
+}
+
+// ────────────────────────────────────────────
+// 개인 투두 리스트
+// ────────────────────────────────────────────
+
+export function subscribePersonalTodoList(
+  userId: string,
+  groupId: string,
+  callback: (list: PersonalTodoList | null) => void
+): Unsubscribe {
+  const id = `${userId}_${groupId}`;
+  return onSnapshot(doc(db, "personalTodos", id), (snap) => {
+    callback(snap.exists() ? (snap.data() as PersonalTodoList) : null);
+  });
+}
+
+export async function savePersonalTodoList(list: PersonalTodoList): Promise<void> {
+  const id = `${list.userId}_${list.groupId}`;
+  await setDoc(doc(db, "personalTodos", id), list);
 }
 
 export function subscribeComments(
