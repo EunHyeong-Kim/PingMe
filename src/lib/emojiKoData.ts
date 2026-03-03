@@ -140,6 +140,48 @@ export const EMOJI_KO_DATA: EmojiEntry[] = [
   { emoji: "🚆", keywords: ["기차", "여행", "train"], category: "여행" },
   { emoji: "🚗", keywords: ["자동차", "드라이브", "car"], category: "여행" },
 
+  // ── 동물 ──
+  { emoji: "🐶", keywords: ["강아지", "개", "dog", "puppy", "동물"], category: "동물" },
+  { emoji: "🐱", keywords: ["고양이", "냥이", "cat", "kitten", "동물"], category: "동물" },
+  { emoji: "🐻", keywords: ["곰", "bear", "동물"], category: "동물" },
+  { emoji: "🐼", keywords: ["판다", "panda", "동물"], category: "동물" },
+  { emoji: "🐨", keywords: ["코알라", "koala", "동물"], category: "동물" },
+  { emoji: "🐯", keywords: ["호랑이", "tiger", "동물"], category: "동물" },
+  { emoji: "🦁", keywords: ["사자", "lion", "동물"], category: "동물" },
+  { emoji: "🐮", keywords: ["소", "젖소", "cow", "동물"], category: "동물" },
+  { emoji: "🐷", keywords: ["돼지", "pig", "동물"], category: "동물" },
+  { emoji: "🐸", keywords: ["개구리", "frog", "동물"], category: "동물" },
+  { emoji: "🐵", keywords: ["원숭이", "monkey", "동물"], category: "동물" },
+  { emoji: "🐔", keywords: ["닭", "chicken", "동물"], category: "동물" },
+  { emoji: "🐧", keywords: ["펭귄", "penguin", "동물"], category: "동물" },
+  { emoji: "🐦", keywords: ["새", "bird", "동물"], category: "동물" },
+  { emoji: "🦆", keywords: ["오리", "duck", "동물"], category: "동물" },
+  { emoji: "🦅", keywords: ["독수리", "eagle", "동물"], category: "동물" },
+  { emoji: "🦉", keywords: ["부엉이", "올빼미", "owl", "동물"], category: "동물" },
+  { emoji: "🦊", keywords: ["여우", "fox", "동물"], category: "동물" },
+  { emoji: "🐺", keywords: ["늑대", "wolf", "동물"], category: "동물" },
+  { emoji: "🐗", keywords: ["멧돼지", "boar", "동물"], category: "동물" },
+  { emoji: "🐴", keywords: ["말", "horse", "동물"], category: "동물" },
+  { emoji: "🦄", keywords: ["유니콘", "unicorn", "동물"], category: "동물" },
+  { emoji: "🐝", keywords: ["벌", "꿀벌", "bee", "동물"], category: "동물" },
+  { emoji: "🦋", keywords: ["나비", "butterfly", "동물"], category: "동물" },
+  { emoji: "🐢", keywords: ["거북이", "turtle", "동물"], category: "동물" },
+  { emoji: "🐍", keywords: ["뱀", "snake", "동물"], category: "동물" },
+  { emoji: "🦎", keywords: ["도마뱀", "lizard", "동물"], category: "동물" },
+  { emoji: "🐬", keywords: ["돌고래", "dolphin", "동물"], category: "동물" },
+  { emoji: "🐳", keywords: ["고래", "whale", "동물"], category: "동물" },
+  { emoji: "🦈", keywords: ["상어", "shark", "동물"], category: "동물" },
+  { emoji: "🐙", keywords: ["문어", "octopus", "동물"], category: "동물" },
+  { emoji: "🦓", keywords: ["얼룩말", "zebra", "동물"], category: "동물" },
+  { emoji: "🦒", keywords: ["기린", "giraffe", "동물"], category: "동물" },
+  { emoji: "🐘", keywords: ["코끼리", "elephant", "동물"], category: "동물" },
+  { emoji: "🦏", keywords: ["코뿔소", "rhinoceros", "동물"], category: "동물" },
+  { emoji: "🦛", keywords: ["하마", "hippo", "동물"], category: "동물" },
+  { emoji: "🐿️", keywords: ["다람쥐", "squirrel", "동물"], category: "동물" },
+  { emoji: "🦔", keywords: ["고슴도치", "hedgehog", "동물"], category: "동물" },
+  { emoji: "🐇", keywords: ["토끼", "rabbit", "동물"], category: "동물" },
+  { emoji: "🦘", keywords: ["캥거루", "kangaroo", "동물"], category: "동물" },
+
   // ── 감정 / 표현 ──
   { emoji: "😊", keywords: ["웃음", "행복", "기쁨", "미소", "smile"], category: "감정" },
   { emoji: "🥰", keywords: ["사랑", "좋아함", "귀여움", "love"], category: "감정" },
@@ -152,7 +194,7 @@ export const EMOJI_KO_DATA: EmojiEntry[] = [
   { emoji: "💪", keywords: ["화이팅", "파이팅", "응원", "fighting"], category: "감정" },
 ];
 
-export const EMOJI_CATEGORIES = ["전체", "과일", "공부", "운동", "개발", "목표", "팀", "예술", "음식", "자연", "여행", "감정"];
+export const EMOJI_CATEGORIES = ["전체", "동물", "과일", "공부", "운동", "개발", "목표", "팀", "예술", "음식", "자연", "여행", "감정"];
 
 export function searchEmoji(query: string): EmojiEntry[] {
   if (!query.trim()) return EMOJI_KO_DATA;
