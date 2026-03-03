@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Plus, Trash2, Check, Pencil } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Check, Pencil, Lock } from "lucide-react";
 import { subscribePersonalTodoList, savePersonalTodoList } from "@/lib/firestore";
 import { PersonalTodoList, TodoCategory, TodoItem } from "@/lib/types";
 
@@ -154,9 +154,14 @@ export default function PersonalTodoView({
           >
             {targetUserEmoji || targetUserName[0]}
           </div>
-          <div>
+          <div className="flex items-center gap-2">
             <h2 className="text-base font-bold text-slate-800">{targetUserName}의 투두리스트</h2>
-            {!isOwner && <p className="text-xs text-slate-400 mt-0.5">읽기 전용</p>}
+            {!isOwner && (
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-400 text-xs font-semibold">
+                <Lock size={10} />
+                읽기 전용
+              </span>
+            )}
           </div>
         </div>
 
