@@ -65,16 +65,6 @@ export default function Sidebar({ groups, selectedGroupId, onSelectGroup, onAddG
                       {group.members.length}명
                     </p>
                   </div>
-                  {/* 멤버 컬러 도트 */}
-                  <div className="flex gap-0.5 shrink-0">
-                    {group.members.slice(0, 3).map((m) => (
-                      <div
-                        key={m.id}
-                        className="w-2 h-2 rounded-full border border-white/50"
-                        style={{ backgroundColor: m.color }}
-                      />
-                    ))}
-                  </div>
                 </button>
 
                 {/* 설정 버튼 — 선택된 그룹에만 노출 */}
