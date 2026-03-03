@@ -82,6 +82,29 @@ export async function joinGroupByCode(
   return group;
 }
 
+export async function deleteGroup(groupId: string): Promise<void> {
+  // 멤버 설정 삭제
+  const memberSnap = await getDocs(query(collection(db, "memberConfigs"), where("groupId", "==", groupId)));
+  await Promise.all(memberSnap.docs.map((d) => deleteDoc(d.ref)));
+
+  // 태스크 및 관련 댓글 삭제
+  const taskSnap = await getDocs(query(collection(db, "tasks"), where("groupId", "==", groupId)));
+  await Promise.all(
+    taskSnap.docs.map(async (d) => {
+      const commentSnap = await getDocs(query(collection(db, "comments"), where("taskId", "==", d.id)));
+      await Promise.all(commentSnap.docs.map((c) => deleteDoc(c.ref)));
+      await deleteDoc(d.ref);
+    })
+  );
+
+  // 개인 투두 삭제 (그룹 관련)
+  const todoSnap = await getDocs(query(collection(db, "personalTodos"), where("groupId", "==", groupId)));
+  await Promise.all(todoSnap.docs.map((d) => deleteDoc(d.ref)));
+
+  // 그룹 문서 삭제
+  await deleteDoc(doc(db, "groups", groupId));
+}
+
 export async function getMyGroups(userId: string): Promise<Group[]> {
   const q = query(collection(db, "memberConfigs"), where("userId", "==", userId));
   const snap = await getDocs(q);

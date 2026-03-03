@@ -15,6 +15,7 @@ import {
   subscribeGroupTasks,
   subscribeGroupMembers,
   updateTaskStatus,
+  deleteGroup,
 } from "@/lib/firestore";
 import { Group, MemberConfig, Task, TaskStatus } from "@/lib/types";
 
@@ -78,6 +79,13 @@ export default function DashboardPage() {
     await updateTaskStatus(taskId, newStatus);
   }, []);
 
+  const handleDeleteGroup = useCallback(async (groupId: string) => {
+    await deleteGroup(groupId);
+    const updatedGroups = await getMyGroups(user!.uid);
+    setGroups(updatedGroups);
+    setSelectedGroupId(updatedGroups[0]?.id ?? null);
+  }, [user]);
+
   const handleGroupCreatedOrJoined = async (group: Group) => {
     if (!user) return;
     const updatedGroups = await getMyGroups(user.uid);
@@ -140,7 +148,10 @@ export default function DashboardPage() {
 
   // Sidebar용 그룹 포맷 변환
   const sidebarGroups = groups.map((g) => ({
-    ...g,
+    id: g.id,
+    name: g.name,
+    profileEmoji: g.profileEmoji,
+    ownerId: g.ownerId,
     members: members
       .filter((m) => m.groupId === g.id)
       .map((m) => ({ id: m.userId, name: m.displayName, color: m.chosenColor, profileEmoji: m.profileEmoji })),
@@ -177,6 +188,7 @@ export default function DashboardPage() {
         selectedGroupId={selectedGroup.id}
         onSelectGroup={setSelectedGroupId}
         onAddGroup={() => setShowGroupModal(true)}
+        onDeleteGroup={handleDeleteGroup}
         currentUserId={user.uid}
         onLogOut={logOut}
       />
