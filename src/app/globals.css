@@ -1,26 +1,68 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Isamanru';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10@1.0/GongGothicLight.woff') format('woff');
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Isamanru';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10@1.0/GongGothicMedium.woff') format('woff');
+  font-weight: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Isamanru';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10@1.0/GongGothicBold.woff') format('woff');
+  font-weight: 700;
+  font-display: swap;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #f0f9ff;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --border: #e0f2fe;
+  --sky-primary: #0ea5e9;
+  --sky-light: #bae6fd;
+  --sky-dark: #0284c7;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Isamanru', Arial, Helvetica, sans-serif;
+  overflow: hidden;
+}
+
+/* Isamanru 폰트 굵기 한 단계 낮춤 (700→400, 600/500→300) */
+.font-black,
+.font-extrabold,
+.font-bold {
+  font-weight: 400;
+}
+.font-semibold,
+.font-medium {
+  font-weight: 300;
+}
+
+/* 스크롤바 스타일링 */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #bae6fd;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #7dd3fc;
 }
