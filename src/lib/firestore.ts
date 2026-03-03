@@ -239,9 +239,16 @@ export function subscribePersonalTodoList(
   callback: (list: PersonalTodoList | null) => void
 ): Unsubscribe {
   const id = `${userId}_${groupId}`;
-  return onSnapshot(doc(db, "personalTodos", id), (snap) => {
-    callback(snap.exists() ? (snap.data() as PersonalTodoList) : null);
-  });
+  return onSnapshot(
+    doc(db, "personalTodos", id),
+    (snap) => {
+      callback(snap.exists() ? (snap.data() as PersonalTodoList) : null);
+    },
+    (error) => {
+      console.error("[Ping] subscribePersonalTodoList 오류:", error.code, error.message);
+      callback(null);
+    }
+  );
 }
 
 export async function savePersonalTodoList(list: PersonalTodoList): Promise<void> {
