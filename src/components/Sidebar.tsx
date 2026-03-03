@@ -96,21 +96,21 @@ export default function Sidebar({ groups, selectedGroupId, onSelectGroup, onAddG
           </div>
           <span>그룹 추가 / 참여</span>
         </button>
-        <div className="flex gap-2">
+        <div className="flex gap-1">
           <button
             onClick={() => setShowAccountSettings(true)}
-            className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl text-slate-400 hover:bg-sky-50 hover:text-sky-500 transition-all text-sm"
+            className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-xl text-slate-400 hover:bg-sky-50 hover:text-sky-500 transition-all text-xs"
             title="내 정보 변경"
           >
-            <UserCog size={14} />
+            <UserCog size={12} />
             <span>내 정보</span>
           </button>
           <button
             onClick={onLogOut}
-            className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all text-sm"
+            className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-xl text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all text-xs"
             title="로그아웃"
           >
-            <LogOut size={14} />
+            <LogOut size={12} />
             <span>로그아웃</span>
           </button>
         </div>

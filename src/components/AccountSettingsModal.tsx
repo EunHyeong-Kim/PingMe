@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Check, Eye, EyeOff, User, Lock } from "lucide-react";
+import { X, Check, Eye, EyeOff, Lock } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { updateAllMemberDisplayNames } from "@/lib/firestore";
 
@@ -94,12 +94,6 @@ export default function AccountSettingsModal({ onClose }: AccountSettingsModalPr
 
         {/* ── 닉네임 변경 ── */}
         <div className="mb-6">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-6 h-6 rounded-lg bg-sky-100 flex items-center justify-center">
-              <User size={12} className="text-sky-500" />
-            </div>
-            <span className="text-xs font-bold text-slate-600 uppercase tracking-wide">닉네임</span>
-          </div>
           <div className="flex gap-2">
             <input
               type="text"
