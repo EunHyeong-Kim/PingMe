@@ -51,7 +51,8 @@ export interface TodoItem {
   text: string;
   completed: boolean;
   createdAt: number;
-  reactions?: Partial<Record<ReactionType, string[]>>; // reactionType -> userId[]
+  completedAt?: number; // 완료 처리된 시각 (미완료 시 undefined)
+  reactions?: Partial<Record<ReactionType, string[]>>;
 }
 
 export interface TodoCategory {

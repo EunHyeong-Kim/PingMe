@@ -175,7 +175,21 @@ export default function GroupTodoView({
 
   const toggleItem = async (catId: string, itemId: string) => {
     if (!list) return;
-    await save({ ...list, categories: list.categories.map((c) => c.id === catId ? { ...c, items: c.items.map((i) => i.id === itemId ? { ...i, completed: !i.completed } : i) } : c) });
+    await save({
+      ...list,
+      categories: list.categories.map((c) =>
+        c.id === catId
+          ? {
+              ...c,
+              items: c.items.map((i) => {
+                if (i.id !== itemId) return i;
+                const nowCompleted = !i.completed;
+                return { ...i, completed: nowCompleted, completedAt: nowCompleted ? Date.now() : undefined };
+              }),
+            }
+          : c
+      ),
+    });
   };
 
   const deleteItem = async (catId: string, itemId: string) => {
@@ -311,9 +325,15 @@ export default function GroupTodoView({
                     </div>
                   </div>
 
-                  {/* 아이템 목록 */}
+                  {/* 아이템 목록 — 미완료(작성순) → 완료(완료순) */}
                   <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1.5">
-                    {cat.items.map((item) => {
+                    {[...cat.items]
+                      .sort((a, b) => {
+                        if (a.completed !== b.completed) return a.completed ? 1 : -1;
+                        if (a.completed) return (a.completedAt ?? 0) - (b.completedAt ?? 0);
+                        return a.createdAt - b.createdAt;
+                      })
+                      .map((item) => {
                       const pickerId = `${cat.id}:${item.id}`;
                       const isPickerOpen = reactionPickerId === pickerId;
                       return (
