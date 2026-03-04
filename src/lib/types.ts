@@ -65,3 +65,8 @@ export interface PersonalTodoList {
   groupId: string;
   categories: TodoCategory[];
 }
+
+export interface GroupTodoList {
+  groupId: string;
+  categories: TodoCategory[];
+}

@@ -10,6 +10,7 @@ import DailyFeed from "@/components/DailyFeed";
 import GroupModal from "@/components/GroupModal";
 import AddTaskModal from "@/components/AddTaskModal";
 import PersonalTodoView from "@/components/PersonalTodoView";
+import GroupTodoView from "@/components/GroupTodoView";
 import {
   getMyGroups,
   subscribeGroupTasks,
@@ -200,7 +201,17 @@ export default function DashboardPage() {
         onLogOut={logOut}
       />
 
-      {todoTargetMemberId ? (() => {
+      {todoTargetMemberId === "__group__" ? (
+        <GroupTodoView
+          groupId={selectedGroup.id}
+          groupName={selectedGroup.name}
+          groupEmoji={selectedGroup.profileEmoji}
+          currentUserId={user.uid}
+          members={calendarGroup.members}
+          onMemberClick={(memberId) => setTodoTargetMemberId(memberId)}
+          onBack={() => setTodoTargetMemberId(null)}
+        />
+      ) : todoTargetMemberId ? (() => {
         const target = calendarGroup.members.find((m) => m.id === todoTargetMemberId);
         if (!target) return null;
         return (
@@ -210,6 +221,8 @@ export default function DashboardPage() {
             targetUserColor={target.color}
             targetUserEmoji={target.profileEmoji}
             groupId={selectedGroup.id}
+            groupName={selectedGroup.name}
+            groupEmoji={selectedGroup.profileEmoji}
             isOwner={target.id === user.uid}
             currentUserId={user.uid}
             members={calendarGroup.members}

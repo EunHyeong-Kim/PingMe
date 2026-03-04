@@ -102,8 +102,24 @@ export default function MonthlyCalendar({
         </div>
 
         <div className="flex items-center gap-3">
-          {/* 멤버 컬러 범례 — 클릭 시 개인 투두 열기 */}
-          <div className="flex items-center gap-2 mr-2 bg-sky-50 rounded-xl px-4 py-2 border border-sky-100">
+          {/* 투두 탭 — 그룹 공용 + 개인 */}
+          <div className="flex items-center gap-1 mr-2 bg-sky-50 rounded-xl px-3 py-1.5 border border-sky-100">
+            {/* 그룹 공용 투두 탭 */}
+            <button
+              onClick={() => onMemberClick?.("__group__")}
+              className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-white hover:shadow-sm transition-all group/member"
+              title={`${group.name} 공용 투두리스트`}
+            >
+              <span className="text-sm leading-none">{group.profileImg || group.name[0]}</span>
+              <span className="text-xs text-slate-600 font-semibold group-hover/member:text-slate-800 transition-colors">
+                {group.name}
+              </span>
+            </button>
+
+            {/* 구분선 */}
+            <div className="w-px h-4 bg-slate-200 mx-1" />
+
+            {/* 개인 투두 탭 */}
             {group.members.map((m) => (
               <button
                 key={m.id}

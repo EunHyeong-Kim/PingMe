@@ -19,6 +19,8 @@ interface PersonalTodoViewProps {
   targetUserColor: string;
   targetUserEmoji?: string;
   groupId: string;
+  groupName: string;
+  groupEmoji?: string;
   isOwner: boolean;
   currentUserId: string;
   members: GroupMember[];
@@ -136,6 +138,8 @@ export default function PersonalTodoView({
   targetUserColor,
   targetUserEmoji,
   groupId,
+  groupName,
+  groupEmoji,
   isOwner,
   currentUserId,
   members,
@@ -312,28 +316,34 @@ export default function PersonalTodoView({
         </div>
 
         <div className="flex items-center gap-3">
-          {/* 그룹원 탭 — 클릭 시 해당 멤버 투두로 이동 */}
+          {/* 투두 탭 — 그룹 공용 + 개인 */}
           {members.length > 0 && (
             <div className="flex items-center gap-1 bg-sky-50 rounded-xl px-3 py-1.5 border border-sky-100">
+              {/* 그룹 공용 탭 */}
+              <button
+                onClick={() => onMemberClick("__group__")}
+                className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-white hover:shadow-sm transition-all group/member"
+                title={`${groupName} 공용 투두리스트`}
+              >
+                <span className="text-sm leading-none">{groupEmoji || groupName[0]}</span>
+                <span className="text-xs text-slate-600 font-semibold group-hover/member:text-slate-800 transition-colors">{groupName}</span>
+              </button>
+
+              {/* 구분선 */}
+              <div className="w-px h-4 bg-slate-200 mx-1" />
+
+              {/* 개인 탭 */}
               {members.map((m) => {
                 const isActive = m.id === targetUserId;
                 return (
                   <button
                     key={m.id}
                     onClick={() => { if (!isActive) onMemberClick(m.id); }}
-                    className={`flex items-center gap-1.5 px-2 py-1 rounded-lg transition-all group/member ${
-                      isActive
-                        ? "bg-white shadow-sm cursor-default"
-                        : "hover:bg-white hover:shadow-sm"
-                    }`}
+                    className={`flex items-center gap-1.5 px-2 py-1 rounded-lg transition-all group/member ${isActive ? "bg-white shadow-sm cursor-default" : "hover:bg-white hover:shadow-sm"}`}
                     title={`${m.name}의 투두리스트`}
                   >
                     <div className="w-2.5 h-2.5 rounded-full shadow-sm shrink-0" style={{ backgroundColor: m.color }} />
-                    <span
-                      className={`text-xs font-medium transition-colors ${
-                        isActive ? "text-slate-700 font-semibold" : "text-slate-500 group-hover/member:text-slate-700"
-                      }`}
-                    >
+                    <span className={`text-xs font-medium transition-colors ${isActive ? "text-slate-700 font-semibold" : "text-slate-500 group-hover/member:text-slate-700"}`}>
                       {m.name}
                     </span>
                   </button>
