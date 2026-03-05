@@ -54,6 +54,7 @@ export interface TodoCategory {
   name: string;
   items: TodoItem[];
   pinned?: boolean;
+  pinnedAt?: number;
 }
 
 export interface PersonalTodoList {

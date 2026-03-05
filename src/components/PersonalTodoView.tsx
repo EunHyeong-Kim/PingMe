@@ -102,9 +102,13 @@ export default function PersonalTodoView({
     if (!list) return;
     await save({
       ...list,
-      categories: list.categories.map((c) =>
-        c.id === catId ? { ...c, pinned: !c.pinned } : c
-      ),
+      categories: list.categories.map((c) => {
+        if (c.id !== catId) return c;
+        const nowPinned = !c.pinned;
+        const updated = { ...c, pinned: nowPinned, pinnedAt: nowPinned ? Date.now() : undefined };
+        if (!nowPinned) delete updated.pinnedAt;
+        return updated;
+      }),
     });
   };
 
@@ -300,10 +304,17 @@ export default function PersonalTodoView({
         <div className="flex-1 overflow-x-auto overflow-y-hidden">
           <div className="flex gap-4 p-5 h-full items-start min-w-max">
 
-            {/* 카테고리 컬럼들 — 활성(미완료 있거나 빈 카테고리, 또는 핀 고정) */}
-            {(list?.categories ?? [])
-              .filter((cat) => cat.pinned || cat.items.length === 0 || cat.items.some((i) => !i.completed))
-              .map((cat) => {
+            {/* 카테고리 컬럼들 — 핀 고정(pinnedAt 순) → 활성(미완료 있거나 빈) */}
+            {(() => {
+              const all = list?.categories ?? [];
+              const pinned = all
+                .filter((c) => c.pinned)
+                .sort((a, b) => (a.pinnedAt ?? 0) - (b.pinnedAt ?? 0));
+              const active = all.filter(
+                (c) => !c.pinned && (c.items.length === 0 || c.items.some((i) => !i.completed))
+              );
+              return [...pinned, ...active];
+            })().map((cat) => {
               return (
                 <div
                   key={cat.id}
