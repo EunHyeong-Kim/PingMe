@@ -1,11 +1,5 @@
 export type TaskStatus = "예정" | "진행 중" | "완료";
 
-export interface UserProfile {
-  uid: string;
-  email: string;
-  displayName: string;
-}
-
 export interface Group {
   id: string;
   name: string;

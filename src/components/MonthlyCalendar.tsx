@@ -62,21 +62,18 @@ export default function MonthlyCalendar({
   }, [year, month]);
 
   const tasksByDate = useMemo(() => {
-    const map: Record<string, { task: UITask; isContinuation: boolean }[]> = {};
+    const map: Record<string, { task: UITask }[]> = {};
 
     tasks.forEach((task) => {
       const start = task.date;
       const end = task.endDate ?? task.date;
 
-      // 시작일~종료일 사이 모든 날짜에 등록
       const cur = new Date(start + "T00:00:00");
       const endD = new Date(end + "T00:00:00");
-      let first = true;
       while (cur <= endD) {
         const key = `${cur.getFullYear()}-${String(cur.getMonth() + 1).padStart(2, "0")}-${String(cur.getDate()).padStart(2, "0")}`;
         if (!map[key]) map[key] = [];
-        map[key].push({ task, isContinuation: !first });
-        first = false;
+        map[key].push({ task });
         cur.setDate(cur.getDate() + 1);
       }
     });

@@ -16,7 +16,6 @@ interface SidebarMember {
 interface SidebarGroup {
   id: string;
   name: string;
-  profileImg?: string;
   profileEmoji?: string;
   ownerId: string;
   inviteCode?: string;
@@ -91,7 +90,7 @@ export default function Sidebar({
                       : "text-slate-600 hover:bg-sky-50 hover:text-slate-800"
                   }`}
                 >
-                  <span className="text-xl leading-none shrink-0">{group.profileEmoji ?? group.profileImg ?? "📌"}</span>
+                  <span className="text-xl leading-none shrink-0">{group.profileEmoji ?? "📌"}</span>
                   <div className="flex-1 min-w-0 pr-7">
                     <p className="text-sm font-semibold truncate">{group.name}</p>
                     <p className={`text-xs truncate font-medium ${isSelected ? "text-sky-100" : "text-slate-400"}`}>

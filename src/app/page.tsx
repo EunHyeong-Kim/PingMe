@@ -188,7 +188,6 @@ export default function DashboardPage() {
     date: t.date,
     endDate: t.endDate,
     status: t.status,
-    comments: [],
   }));
 
   // 투두 뷰 활성 여부

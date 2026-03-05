@@ -14,13 +14,6 @@ export interface UIGroup {
   members: UIMember[];
 }
 
-export interface UIComment {
-  id: string;
-  author: string;
-  content: string;
-  timestamp: string;
-}
-
 export interface UITask {
   id: string;
   memberId: string;
@@ -28,5 +21,4 @@ export interface UITask {
   date: string;
   endDate?: string;
   status: TaskStatus;
-  comments: UIComment[];
 }
