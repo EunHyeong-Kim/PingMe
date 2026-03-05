@@ -284,9 +284,14 @@ export function subscribePersonalTodoList(
   );
 }
 
+// undefined 필드를 제거해 Firestore 저장 오류 방지
+function stripUndefined<T>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj));
+}
+
 export async function savePersonalTodoList(list: PersonalTodoList): Promise<void> {
   const id = `${list.userId}_${list.groupId}`;
-  await setDoc(doc(db, "personalTodos", id), list);
+  await setDoc(doc(db, "personalTodos", id), stripUndefined(list));
 }
 
 // ── 그룹 공용 투두 ──────────────────────────────────
@@ -308,7 +313,7 @@ export function subscribeGroupTodoList(
 }
 
 export async function saveGroupTodoList(list: GroupTodoList): Promise<void> {
-  await setDoc(doc(db, "groupTodos", list.groupId), list);
+  await setDoc(doc(db, "groupTodos", list.groupId), stripUndefined(list));
 }
 
 export function subscribeComments(

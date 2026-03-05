@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Plus, Trash2, Check, Pencil, ChevronDown } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Check, Pencil, ChevronDown, Pin } from "lucide-react";
 import { subscribeGroupTodoList, saveGroupTodoList } from "@/lib/firestore";
 import { GroupTodoList, TodoCategory, TodoItem, ReactionType } from "@/lib/types";
 import { generateId, REACTIONS, ReactionPicker, ReactionBar } from "@/lib/todoUtils";
@@ -86,6 +86,16 @@ export default function GroupTodoView({
     await save({ ...list, categories: list.categories.filter((c) => c.id !== catId) });
   };
 
+  const togglePin = async (catId: string) => {
+    if (!list) return;
+    await save({
+      ...list,
+      categories: list.categories.map((c) =>
+        c.id === catId ? { ...c, pinned: !c.pinned } : c
+      ),
+    });
+  };
+
   const renameCategory = async (catId: string) => {
     if (!editingCatName.trim() || !list) return;
     await save({ ...list, categories: list.categories.map((c) => c.id === catId ? { ...c, name: editingCatName.trim() } : c) });
@@ -96,9 +106,11 @@ export default function GroupTodoView({
 
   const addItem = async (catId: string) => {
     if (!newItemText.trim() || !list) return;
-    const item: TodoItem = { id: generateId(), text: newItemText.trim(), completed: false, createdAt: Date.now() };
+    const text = newItemText.trim();
+    setNewItemText("");
+    setAddingItemCatId(null);
+    const item: TodoItem = { id: generateId(), text, completed: false, createdAt: Date.now() };
     await save({ ...list, categories: list.categories.map((c) => c.id === catId ? { ...c, items: [...c.items, item] } : c) });
-    setNewItemText(""); setAddingItemCatId(null);
   };
 
   const toggleItem = async (catId: string, itemId: string) => {
@@ -112,7 +124,9 @@ export default function GroupTodoView({
               items: c.items.map((i) => {
                 if (i.id !== itemId) return i;
                 const nowCompleted = !i.completed;
-                return { ...i, completed: nowCompleted, completedAt: nowCompleted ? Date.now() : undefined };
+                const updated = { ...i, completed: nowCompleted, completedAt: nowCompleted ? Date.now() : undefined };
+                if (!nowCompleted) delete updated.completedAt;
+                return updated;
               }),
             }
           : c
@@ -211,9 +225,9 @@ export default function GroupTodoView({
         <div className="flex-1 overflow-x-auto overflow-y-hidden">
           <div className="flex gap-4 p-5 h-full items-start min-w-max">
 
-            {/* 카테고리 컬럼들 — 활성(미완료 있거나 빈 카테고리) */}
+            {/* 카테고리 컬럼들 — 활성(미완료 있거나 빈 카테고리, 또는 핀 고정) */}
             {(list?.categories ?? [])
-              .filter((cat) => cat.items.length === 0 || cat.items.some((i) => !i.completed))
+              .filter((cat) => cat.pinned || cat.items.length === 0 || cat.items.some((i) => !i.completed))
               .map((cat) => {
               return (
                 <div key={cat.id} className="w-64 shrink-0 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col" style={{ maxHeight: "calc(100vh - 160px)" }}>
@@ -246,6 +260,17 @@ export default function GroupTodoView({
                         title="항목 추가"
                       >
                         <Plus size={13} />
+                      </button>
+                      <button
+                        onClick={() => togglePin(cat.id)}
+                        className={`w-6 h-6 rounded-lg flex items-center justify-center transition-all ${
+                          cat.pinned
+                            ? "text-sky-500 bg-sky-50"
+                            : "text-slate-400 hover:bg-sky-50 hover:text-sky-500"
+                        }`}
+                        title={cat.pinned ? "핀 해제" : "카테고리 고정"}
+                      >
+                        <Pin size={11} className={cat.pinned ? "fill-sky-400" : ""} />
                       </button>
                       <button
                         onClick={() => deleteCategory(cat.id)}
