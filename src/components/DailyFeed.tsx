@@ -365,7 +365,7 @@ export default function DailyFeed({
     dayTasks.length > 0 ? Math.round((completedCount / dayTasks.length) * 100) : 0;
 
   return (
-    <aside className="w-72 min-w-72 h-screen bg-white flex flex-col border-l border-sky-100 shadow-sm">
+    <aside className="w-full md:w-72 md:min-w-72 bg-white flex flex-col border-l border-sky-100 shadow-sm overflow-hidden">
       {/* 헤더 */}
       <div className="px-5 py-5 border-b border-sky-100 shrink-0">
         <div className="flex items-center justify-between mb-3">

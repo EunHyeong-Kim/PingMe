@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, CalendarDays, ClipboardList, Menu } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Sidebar from "@/components/Sidebar";
 import MonthlyCalendar from "@/components/MonthlyCalendar";
@@ -39,6 +39,9 @@ export default function DashboardPage() {
   const [showGroupModal, setShowGroupModal] = useState(false);
   const [showAddTask, setShowAddTask] = useState(false);
   const [todoTargetMemberId, setTodoTargetMemberId] = useState<string | null>(null);
+  // 모바일 전용 상태
+  const [mobileView, setMobileView] = useState<"calendar" | "feed">("calendar");
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
   // 로그인 상태 확인
   useEffect(() => {
@@ -188,71 +191,121 @@ export default function DashboardPage() {
     comments: [],
   }));
 
-  return (
-    <div className="flex h-screen w-screen overflow-hidden bg-sky-50">
-      <Sidebar
-        groups={sidebarGroups}
-        selectedGroupId={selectedGroup.id}
-        onSelectGroup={(id) => { setSelectedGroupId(id); setTodoTargetMemberId(null); }}
-        onAddGroup={() => setShowGroupModal(true)}
-        onDeleteGroup={handleDeleteGroup}
-        onRenameGroup={handleRenameGroup}
+  // 투두 뷰 활성 여부
+  const isTodoView = !!todoTargetMemberId;
+
+  // 중앙 패널 (캘린더 or 투두)
+  const centerPanel = todoTargetMemberId === "__group__" ? (
+    <GroupTodoView
+      groupId={selectedGroup.id}
+      groupName={selectedGroup.name}
+      groupEmoji={selectedGroup.profileEmoji}
+      currentUserId={user.uid}
+      members={calendarGroup.members}
+      onMemberClick={(memberId) => setTodoTargetMemberId(memberId)}
+      onBack={() => setTodoTargetMemberId(null)}
+    />
+  ) : todoTargetMemberId ? (() => {
+    const target = calendarGroup.members.find((m) => m.id === todoTargetMemberId);
+    if (!target) return null;
+    return (
+      <PersonalTodoView
+        targetUserId={target.id}
+        targetUserName={target.name}
+        targetUserColor={target.color}
+        targetUserEmoji={target.profileEmoji}
+        groupId={selectedGroup.id}
+        groupName={selectedGroup.name}
+        groupEmoji={selectedGroup.profileEmoji}
+        isOwner={target.id === user.uid}
         currentUserId={user.uid}
-        onLogOut={logOut}
+        members={calendarGroup.members}
+        onMemberClick={(memberId) => setTodoTargetMemberId(memberId)}
+        onBack={() => setTodoTargetMemberId(null)}
       />
+    );
+  })() : (
+    <MonthlyCalendar
+      group={calendarGroup}
+      tasks={calendarTasks}
+      currentDate={currentDate}
+      selectedDate={selectedDate}
+      onSelectDate={(date) => { setSelectedDate(date); setMobileView("feed"); }}
+      onPrevMonth={() => setCurrentDate((p) => new Date(p.getFullYear(), p.getMonth() - 1, 1))}
+      onNextMonth={() => setCurrentDate((p) => new Date(p.getFullYear(), p.getMonth() + 1, 1))}
+      onMemberClick={(memberId) => setTodoTargetMemberId(memberId)}
+    />
+  );
 
-      {todoTargetMemberId === "__group__" ? (
-        <GroupTodoView
-          groupId={selectedGroup.id}
-          groupName={selectedGroup.name}
-          groupEmoji={selectedGroup.profileEmoji}
+  return (
+    <div className="flex flex-col h-screen w-screen bg-sky-50">
+      {/* ── 메인 영역 (사이드바 + 중앙 + 피드) ── */}
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar
+          groups={sidebarGroups}
+          selectedGroupId={selectedGroup.id}
+          onSelectGroup={(id) => { setSelectedGroupId(id); setTodoTargetMemberId(null); setShowMobileSidebar(false); }}
+          onAddGroup={() => { setShowGroupModal(true); setShowMobileSidebar(false); }}
+          onDeleteGroup={handleDeleteGroup}
+          onRenameGroup={handleRenameGroup}
           currentUserId={user.uid}
-          members={calendarGroup.members}
-          onMemberClick={(memberId) => setTodoTargetMemberId(memberId)}
-          onBack={() => setTodoTargetMemberId(null)}
+          onLogOut={logOut}
+          isMobileOpen={showMobileSidebar}
+          onMobileClose={() => setShowMobileSidebar(false)}
         />
-      ) : todoTargetMemberId ? (() => {
-        const target = calendarGroup.members.find((m) => m.id === todoTargetMemberId);
-        if (!target) return null;
-        return (
-          <PersonalTodoView
-            targetUserId={target.id}
-            targetUserName={target.name}
-            targetUserColor={target.color}
-            targetUserEmoji={target.profileEmoji}
-            groupId={selectedGroup.id}
-            groupName={selectedGroup.name}
-            groupEmoji={selectedGroup.profileEmoji}
-            isOwner={target.id === user.uid}
-            currentUserId={user.uid}
-            members={calendarGroup.members}
-            onMemberClick={(memberId) => setTodoTargetMemberId(memberId)}
-            onBack={() => setTodoTargetMemberId(null)}
-          />
-        );
-      })() : (
-        <MonthlyCalendar
-          group={calendarGroup}
-          tasks={calendarTasks}
-          currentDate={currentDate}
-          selectedDate={selectedDate}
-          onSelectDate={setSelectedDate}
-          onPrevMonth={() => setCurrentDate((p) => new Date(p.getFullYear(), p.getMonth() - 1, 1))}
-          onNextMonth={() => setCurrentDate((p) => new Date(p.getFullYear(), p.getMonth() + 1, 1))}
-          onMemberClick={(memberId) => setTodoTargetMemberId(memberId)}
-        />
-      )}
 
-      {!todoTargetMemberId && (
-        <DailyFeed
-          group={calendarGroup}
-          tasks={calendarTasks}
-          selectedDate={selectedDate}
-          currentUserId={user.uid}
-          onStatusChange={handleStatusChange}
-          onAddTask={() => setShowAddTask(true)}
-        />
-      )}
+        {/* 중앙 패널 — 모바일: feed 탭이면 숨김, 투두 뷰면 항상 표시 */}
+        <div className={`flex-1 overflow-hidden flex-col ${
+          !isTodoView && mobileView === "feed" ? "hidden md:flex" : "flex"
+        }`}>
+          {centerPanel}
+        </div>
+
+        {/* 우측 피드 — 모바일: feed 탭일 때만 표시, 투두 뷰면 숨김 */}
+        {!isTodoView && (
+          <div className={`flex-col ${
+            mobileView === "feed" ? "flex w-full" : "hidden"
+          } md:flex md:w-auto`}>
+            <DailyFeed
+              group={calendarGroup}
+              tasks={calendarTasks}
+              selectedDate={selectedDate}
+              currentUserId={user.uid}
+              onStatusChange={handleStatusChange}
+              onAddTask={() => setShowAddTask(true)}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* ── 모바일 하단 내비게이션 ── */}
+      <nav className="md:hidden shrink-0 h-16 bg-white border-t border-sky-100 flex items-center z-30 shadow-[0_-1px_12px_rgba(14,165,233,0.08)]">
+        <button
+          onClick={() => setShowMobileSidebar(true)}
+          className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 text-slate-400 hover:text-sky-500 transition-colors"
+        >
+          <Menu size={20} />
+          <span className="text-[9px] font-semibold">그룹</span>
+        </button>
+        <button
+          onClick={() => { setMobileView("calendar"); setTodoTargetMemberId(null); }}
+          className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2 transition-colors ${
+            mobileView === "calendar" && !isTodoView ? "text-sky-500" : "text-slate-400 hover:text-sky-400"
+          }`}
+        >
+          <CalendarDays size={20} />
+          <span className="text-[9px] font-semibold">캘린더</span>
+        </button>
+        <button
+          onClick={() => { setMobileView("feed"); setTodoTargetMemberId(null); }}
+          className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2 transition-colors ${
+            mobileView === "feed" && !isTodoView ? "text-sky-500" : "text-slate-400 hover:text-sky-400"
+          }`}
+        >
+          <ClipboardList size={20} />
+          <span className="text-[9px] font-semibold">일정</span>
+        </button>
+      </nav>
 
       {showGroupModal && (
         <GroupModal
@@ -262,7 +315,6 @@ export default function DashboardPage() {
           onGroupCreatedOrJoined={handleGroupCreatedOrJoined}
         />
       )}
-
       {showAddTask && selectedGroup && (
         <AddTaskModal
           groupId={selectedGroup.id}
@@ -271,7 +323,6 @@ export default function DashboardPage() {
           onClose={() => setShowAddTask(false)}
         />
       )}
-
     </div>
   );
 }

@@ -32,6 +32,8 @@ interface SidebarProps {
   onRenameGroup?: (groupId: string, newName: string) => void;
   currentUserId: string;
   onLogOut: () => void;
+  isMobileOpen?: boolean;
+  onMobileClose?: () => void;
 }
 
 export default function Sidebar({
@@ -43,6 +45,8 @@ export default function Sidebar({
   onRenameGroup,
   onLogOut,
   currentUserId,
+  isMobileOpen = false,
+  onMobileClose,
 }: SidebarProps) {
   const [settingsGroupId, setSettingsGroupId] = useState<string | null>(null);
   const [showAccountSettings, setShowAccountSettings] = useState(false);
@@ -51,7 +55,21 @@ export default function Sidebar({
   const currentMember = settingsGroup?.members.find((m) => m.id === currentUserId);
 
   return (
-    <aside className="w-56 min-w-56 h-screen bg-white flex flex-col border-r border-sky-100 shadow-sm">
+    <>
+      {/* 모바일 백드롭 */}
+      {isMobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/40 z-40"
+          onClick={onMobileClose}
+        />
+      )}
+    <aside className={`
+      bg-white flex flex-col border-r border-sky-100 shadow-sm
+      md:relative md:flex md:w-56 md:min-w-56
+      fixed top-0 left-0 h-full z-50 w-64
+      transition-transform duration-300 ease-in-out
+      ${isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+    `}>
       {/* 앱 로고 */}
       <div className="px-5 py-5 border-b border-sky-100 flex justify-center">
         <Image src="/favicon.ico" alt="Ping" width={36} height={36} className="rounded-xl" />
@@ -157,5 +175,6 @@ export default function Sidebar({
         <AccountSettingsModal onClose={() => setShowAccountSettings(false)} />
       )}
     </aside>
+    </>
   );
 }

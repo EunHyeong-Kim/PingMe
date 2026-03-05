@@ -294,9 +294,9 @@ export default function PersonalTodoView({
   };
 
   return (
-    <div className="flex-1 flex flex-col h-screen bg-sky-50/50 overflow-hidden">
+    <div className="flex-1 flex flex-col overflow-hidden bg-sky-50/50">
       {/* 헤더 */}
-      <div className="px-6 py-5 bg-white border-b border-sky-100 flex items-center justify-between shrink-0 shadow-sm">
+      <div className="px-4 md:px-6 py-4 md:py-5 bg-white border-b border-sky-100 flex items-center justify-between shrink-0 shadow-sm gap-2">
         <div className="flex items-center gap-3">
           <button
             onClick={onBack}
@@ -325,7 +325,7 @@ export default function PersonalTodoView({
         <div className="flex items-center gap-3">
           {/* 투두 탭 — 그룹 공용 + 개인 */}
           {members.length > 0 && (
-            <div className="flex items-center gap-1 bg-sky-50 rounded-xl px-3 py-1.5 border border-sky-100">
+            <div className="flex items-center gap-0.5 md:gap-1 bg-sky-50 rounded-xl px-2 md:px-3 py-1.5 border border-sky-100 overflow-x-auto max-w-[40vw] md:max-w-none shrink-0">
               {/* 그룹 공용 탭 */}
               <button
                 onClick={() => onMemberClick("__group__")}
